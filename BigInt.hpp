@@ -5,6 +5,17 @@
 #include <algorithm>
 #include <string.h>
 
+#ifndef TMP
+	#define TMP true
+#endif
+// TMP
+
+#if TMP
+    #define COMPILE_TIME_WORK constexpr
+#else
+    #define COMPILE_TIME_WORK
+#endif // checking
+
 template <typename T, size_t SIZE>
 class CT_array {
 public:
@@ -15,9 +26,11 @@ public:
 	using reference = T&;
 	using const_reference = const T&;
 public:
-	constexpr CT_array () : CT_array(0) {}
+	COMPILE_TIME_WORK
+    CT_array () : CT_array(0) {}
 
-	constexpr CT_array (value_type val) {
+	COMPILE_TIME_WORK
+    CT_array (value_type val) {
 		int i = SIZE - 1;
 		for (; i > 0 && val != 0; --i) {
 			arr[i] = val % 10;
@@ -27,13 +40,17 @@ public:
 			arr[i--] = 0;
 	}
 
-	constexpr CT_array (const CT_array<value_type, SIZE>& other) {
+
+	COMPILE_TIME_WORK
+    CT_array (const CT_array<value_type, SIZE>& other) {
 		for (int i = SIZE; i --> 0;) {
 			arr[i] = other[i];
 		}
 	}
 
-	constexpr CT_array (const std::initializer_list<value_type>& il) {
+
+	COMPILE_TIME_WORK
+    CT_array (const std::initializer_list<value_type>& il) {
 		int i = SIZE;
 		for (auto it = std::rbegin(il); it != std::rend(il); ++it) {
 			arr[--i] = *it;
@@ -44,7 +61,9 @@ public:
 			arr[--i] = 0;
 	}
 
-	constexpr CT_array (const char* str) {
+
+	COMPILE_TIME_WORK
+    CT_array (const char* str) {
 		int i = SIZE;
 
 		if (str && !__is_numeric(str))
@@ -64,11 +83,29 @@ public:
 	}
 
 public:
-	constexpr size_type size () const {
+
+	COMPILE_TIME_WORK
+    size_type capacity () const {
 		return SIZE;
 	}
 
-	constexpr void print () const {
+	COMPILE_TIME_WORK
+    size_type size () const {
+        int i = 0;
+        while (arr[i] == 0)
+            ++i;
+        return SIZE - i;
+	}
+
+	COMPILE_TIME_WORK
+    void fill (const value_type& val) {
+        for (int i = 0; i < SIZE; ++i) {
+            arr[i] = val;
+        }
+	}
+
+	COMPILE_TIME_WORK
+    void print () const {
 		int i = 0;
 		while (arr[i] == 0)
 			++i;
@@ -78,17 +115,22 @@ public:
 		std::cout << std::endl;
 	}
 public:
-	constexpr const_reference operator[] (size_type i) const {
+
+	COMPILE_TIME_WORK
+    const_reference operator[] (size_type i) const {
 		return arr[i];
 	}
 
-	constexpr reference operator[] (size_type i) {
+
+	COMPILE_TIME_WORK
+    reference operator[] (size_type i) {
 		return const_cast<reference>(static_cast<const CT_array&>(*this)[i]);
 	}
 private:
 	T arr[SIZE];
 
-	constexpr static bool __is_numeric(const char* str) {
+	COMPILE_TIME_WORK
+    static bool __is_numeric(const char* str) {
 		for (int i = 0; str[i] != '\0'; ++i) {
 			if (str[i] < '0' || str[i] > '9')
 				return false;
@@ -100,25 +142,58 @@ private:
 template <size_t N>
 class BigInt {
 public:
-	constexpr BigInt () = default;
-	constexpr BigInt (const char* str) : arr(str) {}
-	constexpr BigInt (int val) : arr(val) {}
-	constexpr BigInt (const std::initializer_list<int>& il) : arr(il) {}
-	constexpr BigInt (const BigInt<N>& other) : arr(other.arr) {}
+
+	COMPILE_TIME_WORK
+    BigInt () = default;
+
+	COMPILE_TIME_WORK
+    BigInt (const char* str) : arr(str) {}
+
+	COMPILE_TIME_WORK
+    BigInt (int val) : arr(val) {}
+
+	COMPILE_TIME_WORK
+    BigInt (const std::initializer_list<int>& il) : arr(il) {}
+
+	COMPILE_TIME_WORK
+    BigInt (const BigInt<N>& other) : arr(other.arr) {}
 public:
-	constexpr void print () const {
+
+	COMPILE_TIME_WORK
+    void print () const {
 		arr.print();
 	}
+
+	COMPILE_TIME_WORK
+    size_t size () const {
+		return arr.size();
+	}
+
+	COMPILE_TIME_WORK
+    size_t capacity () const {
+		return arr.capacity();
+	}
+
+	COMPILE_TIME_WORK
+    void fill (int val) {
+		arr.fill(val);
+	}
 public:
-	constexpr int operator[] (size_t i) const {
+
+	COMPILE_TIME_WORK
+    int operator[] (size_t i) const {
 		return arr[i];
 	}
 
-	constexpr int& operator[] (size_t i) {
+
+	COMPILE_TIME_WORK
+    int& operator[] (size_t i) {
 		return arr[i];
 	}
 
-	constexpr BigInt<N> operator+ (const BigInt<N>& other) const {
+
+	COMPILE_TIME_WORK
+    BigInt<N> operator+ (const BigInt<N>& other) const {
 		BigInt<N> res;
 		int mod = 0;
 		int curr = 0;
@@ -127,14 +202,57 @@ public:
 		for (int i = N; i --> 0;) {
 			curr = carry + arr[i] + other.arr[i];
 			mod = curr % 10;
-			res.arr[i] = mod; 
+			res.arr[i] = mod;
 			carry = curr / 10;
 		}
 
 		return res;
 	}
 
-	constexpr BigInt<N> operator- (const BigInt<N>& other) const {
+    COMPILE_TIME_WORK
+    BigInt<N>& operator += (const BigInt<N>& other) {
+        *this = *this + other;
+        return *this;
+    }
+
+    COMPILE_TIME_WORK
+    BigInt<N>& operator -= (const BigInt<N>& other) {
+        *this = *this - other;
+        return *this;
+    }
+
+    COMPILE_TIME_WORK
+    BigInt<N> operator* (const BigInt<N>& other) const {
+        BigInt<N> res;
+        BigInt<N> row;
+
+        int carry = 0;
+        int mod = 0;
+        int curr = 0;
+        int offset = 0;
+
+        int num1_size;
+        int num2_size = other.size();
+
+        for (int i = other.capacity() - 1; num2_size >= 0; --i, --num2_size) {
+            num1_size = this->size();
+            for (int j = this->capacity() - 1; num1_size >= 0; --j, --num1_size) {
+                curr = other.arr[i] * arr[j] + carry;
+                carry = curr / 10;
+                mod = curr % 10;
+                row[j - offset] = mod;
+            }
+            res += row;
+            row.fill(0);
+            ++offset;
+        }
+
+        return res;
+    }
+
+
+	COMPILE_TIME_WORK
+    BigInt<N> operator- (const BigInt<N>& other) const {
 		if (__is_bigger(other, *this))
 			throw std::invalid_argument("Result can't be negative");
 
@@ -160,7 +278,9 @@ public:
 private:
 	CT_array<int, N> arr;
 
-	static constexpr bool __is_bigger(const BigInt<N>& op1, const BigInt<N>& op2) {
+	static
+	COMPILE_TIME_WORK
+    bool __is_bigger(const BigInt<N>& op1, const BigInt<N>& op2) {
 		for (int i = 0; i < N; ++i) {
 			if (op1[i] < op2[i])
 				return false;
