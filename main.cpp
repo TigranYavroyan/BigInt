@@ -14,10 +14,10 @@ int main () {
 		std::cout << "Compile time start" << std::endl;
 
         COMPILE_TIME_WORK
-        BigInt<size> num1 = "22345";
+        BigInt<size> num1 = "123";
 
         COMPILE_TIME_WORK
-        BigInt<size> num2 = "2234";
+        BigInt<size> num2 = "12312312312";
 
         COMPILE_TIME_WORK
         BigInt<size> res = num1 * num2;

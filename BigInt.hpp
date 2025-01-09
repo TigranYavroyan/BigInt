@@ -88,9 +88,7 @@ public:
 
 	COMPILE_TIME_WORK
     size_type size () const {
-        int i = 0;
-        while (arr[i] == 0)
-            ++i;
+        size_type i = __till_num();
         return SIZE - i;
 	}
 
@@ -103,9 +101,7 @@ public:
 
 	COMPILE_TIME_WORK
     void print () const {
-		size_t i = 0;
-		while (arr[i] == 0)
-			++i;
+		size_t i = __till_num();
 		for (;i < SIZE; ++i) {
 			std::cout << arr[i];
 		}
@@ -126,6 +122,14 @@ public:
 private:
 	T arr[SIZE];
 
+	COMPILE_TIME_WORK
+	size_type __till_num () const {
+		size_type i = 0;
+		while (i < SIZE && arr[i] == 0)
+			++i;
+		return i;
+	}
+	
 	COMPILE_TIME_WORK
     static bool __is_numeric(const char* str) {
 		for (int i = 0; str[i] != '\0'; ++i) {
@@ -165,7 +169,7 @@ public:
 	COMPILE_TIME_WORK
     void print () const {
 		size_type i = 0;
-		while (arr[i] == 0)
+		while (i < N && arr[i] == 0)
 			++i;
 		for (; i < N; ++i) {
 			std::printf("%d", arr[i]);
@@ -288,7 +292,7 @@ public:
 	BigInt<N> operator/ (const BigInt<N>& other) const {
 		BigInt<N> res;
 
-		
+
 
 		return res;
 	}
