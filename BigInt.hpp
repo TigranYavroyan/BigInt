@@ -27,10 +27,7 @@ public:
 	using const_reference = const T&;
 public:
 	COMPILE_TIME_WORK
-    CT_array () : CT_array(0) {}
-
-	COMPILE_TIME_WORK
-    CT_array (value_type val) {
+    CT_array (value_type val = 0) {
 		int i = SIZE - 1;
 		for (; i > 0 && val != 0; --i) {
 			arr[i] = val % 10;
@@ -69,7 +66,7 @@ public:
 		if (str && !__is_numeric(str))
 			throw std::invalid_argument("String must contain only digits");
 
-		static_assert((std::is_same_v<T, int>));
+		static_assert((std::is_same_v<T, int>) || (std::is_same_v<T, char>));
 
 		for (int j = strlen(str); i --> 0 && j --> 0;) {
 			arr[i] = str[j] - '0';
@@ -99,14 +96,14 @@ public:
 
 	COMPILE_TIME_WORK
     void fill (const value_type& val) {
-        for (int i = 0; i < SIZE; ++i) {
+        for (size_t i = 0; i < SIZE; ++i) {
             arr[i] = val;
         }
 	}
 
 	COMPILE_TIME_WORK
     void print () const {
-		int i = 0;
+		size_t i = 0;
 		while (arr[i] == 0)
 			++i;
 		for (;i < SIZE; ++i) {
@@ -142,6 +139,12 @@ private:
 template <size_t N>
 class BigInt {
 public:
+	using value_type = char;
+	using size_type = size_t;
+	using pointer = char*;
+	using const_pointer = const char*;
+	using reference = char&;
+	using const_reference = const char&;
 
 	COMPILE_TIME_WORK
     BigInt () = default;
@@ -153,7 +156,7 @@ public:
     BigInt (int val) : arr(val) {}
 
 	COMPILE_TIME_WORK
-    BigInt (const std::initializer_list<int>& il) : arr(il) {}
+    BigInt (const std::initializer_list<value_type>& il) : arr(il) {}
 
 	COMPILE_TIME_WORK
     BigInt (const BigInt<N>& other) : arr(other.arr) {}
@@ -161,33 +164,39 @@ public:
 
 	COMPILE_TIME_WORK
     void print () const {
-		arr.print();
+		size_type i = 0;
+		while (arr[i] == 0)
+			++i;
+		for (; i < N; ++i) {
+			std::printf("%d", arr[i]);
+		}
+		std::cout.put('\n');
 	}
 
 	COMPILE_TIME_WORK
-    size_t size () const {
+    size_type size () const {
 		return arr.size();
 	}
 
 	COMPILE_TIME_WORK
-    size_t capacity () const {
+    size_type capacity () const {
 		return arr.capacity();
 	}
 
 	COMPILE_TIME_WORK
-    void fill (int val) {
+    void fill (value_type val) {
 		arr.fill(val);
 	}
 public:
 
 	COMPILE_TIME_WORK
-    int operator[] (size_t i) const {
+    const value_type operator[] (size_type i) const {
 		return arr[i];
 	}
 
 
 	COMPILE_TIME_WORK
-    int& operator[] (size_t i) {
+    reference operator[] (size_type i) {
 		return arr[i];
 	}
 
@@ -209,14 +218,39 @@ public:
 		return res;
 	}
 
+	COMPILE_TIME_WORK
+    BigInt<N> operator- (const BigInt<N>& other) const {
+		if (__is_bigger(other, *this))
+			throw std::invalid_argument("Result can't be negative");
+
+		BigInt<N> res;
+		BigInt<N> cache = *this;
+
+		for (int i = N; i --> 0;) {
+			if (cache.arr[i] >= other.arr[i])
+				res[i] = cache.arr[i] - other.arr[i];
+			else {
+				for (int j = i - 1; j >= 0; --j) {
+					if (cache.arr[j] != 0) {
+						--cache.arr[j];
+						break;
+					}
+				}
+				res[i] = (10 + cache.arr[i]) - other.arr[i];
+			}
+		}
+
+		return res;
+	}
+
     COMPILE_TIME_WORK
-    BigInt<N>& operator += (const BigInt<N>& other) {
+    BigInt<N>& operator+= (const BigInt<N>& other) {
         *this = *this + other;
         return *this;
     }
 
     COMPILE_TIME_WORK
-    BigInt<N>& operator -= (const BigInt<N>& other) {
+    BigInt<N>& operator-= (const BigInt<N>& other) {
         *this = *this - other;
         return *this;
     }
@@ -250,33 +284,18 @@ public:
         return res;
     }
 
-
 	COMPILE_TIME_WORK
-    BigInt<N> operator- (const BigInt<N>& other) const {
-		if (__is_bigger(other, *this))
-			throw std::invalid_argument("Result can't be negative");
-
+	BigInt<N> operator/ (const BigInt<N>& other) const {
 		BigInt<N> res;
-		BigInt<N> cache = *this;
 
-		for (int i = N; i --> 0;) {
-			if (cache.arr[i] >= other.arr[i])
-				res[i] = cache.arr[i] - other.arr[i];
-			else {
-				for (int j = i - 1; j >= 0; --j) {
-					if (cache.arr[j] != 0) {
-						--cache.arr[j];
-						break;
-					}
-				}
-				res[i] = (10 + cache.arr[i]) - other.arr[i];
-			}
-		}
+		
 
 		return res;
 	}
+
+
 private:
-	CT_array<int, N> arr;
+	CT_array<char, N> arr;
 
 	static
 	COMPILE_TIME_WORK
