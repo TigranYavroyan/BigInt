@@ -217,9 +217,11 @@ public:
         if (pos >= N)
             throw std::out_of_range("Out of range");
         if (pos == 0)
-            pos = CT_array<char, N>::__till_num();
-        while (start != end) {
-            arr[pos] = other.arr[start++];
+            pos = CT_array<char, N>::__till_num(this->arr.arr);
+        while (start != end && pos < N) {
+            arr[pos] = other.arr[start];
+            ++pos;
+            ++start;
         }
 	}
 public:
@@ -245,7 +247,7 @@ public:
 
     COMPILE_TIME_WORK
     bool operator< (const BigInt<N>& other) const {
-        return !((*this > other) && (*this != other));
+        return !(*this > other || *this == other);
     }
 
     COMPILE_TIME_WORK
@@ -353,29 +355,56 @@ public:
 
 	COMPILE_TIME_WORK
 	BigInt<N> operator/ (const BigInt<N>& other) const {
-		BigInt<N> res;
+		std::string res;
         BigInt<N> curr;
+        BigInt<N> tmp;
+        BigInt<N> next;
 
-        long long this_start = CT_array<char, N>::__till_num(other.arr.arr);
-        long long this_end = this_start;
+        long long this_start = CT_array<char, N>::__till_num(this->arr.arr);
+        long long this_end;
         const long long other_start = CT_array<char, N>::__till_num(other.arr.arr);
         const long long other_end = 0;
-        const long long other_num_size = other_start - other_end;
+        const long long other_num_size = other.size();
 
-        int count = 1;
+        int count;
 
         if (other_num_size == 0)
             throw std::invalid_argument("Can't divide by zero");
 
-        while (this_end >= 0) {
-            this_end += other_num_size;
-            if (!__is_bigger_equal_ranges(arr, other.arr, this_start, this_end, other_start, other_end))
+        while (this_end < N) {
+            count = 0;
+            // std::cout << "tmp.size(): " << tmp.size() << std::endl;
+            this_end = this_start + other_num_size - tmp.size();
+            // std::cout << this_start << ' ' << this_end << std::endl;
+            if (tmp.size() == 0)
+                curr.subnum(*this, this_start, this_end, N - other_num_size);
+            else
+                curr = tmp;
+            // std::cout << "1st curr: ";
+            // curr.print();
+            while (curr < other) {
+                curr = curr * BigInt<N>("10");
+                std::string last_num = std::to_string(arr[this_end]);
+                curr += BigInt<N>(last_num.c_str());
                 ++this_end;
-
-            while ()
+            }
+            std::cout << "2nd curr: ";
+            curr.print();
+            tmp = curr;
+            std::cout << "other: ";
+            other.print();
+            while (tmp >= other) {
+                std::cout << "tmp: ";
+                tmp.print();
+                tmp -= other;
+                ++count;
+            }
+            std::cout << "count: " << count << std::endl;
+            res += count + '0';
+            this_start = this_end;
         }
-
-		return res;
+        // std::cout << res << std::endl;
+		return BigInt<N>(res.c_str());
 	}
 
 private:
@@ -399,11 +428,10 @@ private:
 		while (f_start >= f_end && s_start >= s_end) {
             if (op1[f_start] < op2[s_start])
                 return false;
-            ++f_start;
-            ++s_start;
+            --f_start;
+            --s_start;
         }
         return true;
 	}
 };
-
 #endif // BIGINT_HPP
