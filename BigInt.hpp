@@ -6,7 +6,7 @@
 #include <string.h>
 
 #ifndef TMP
-	#define TMP true
+	#define TMP false
 #endif
 // TMP
 
@@ -295,13 +295,15 @@ public:
 		BigInt<N> res;
 		BigInt<N> cache = *this;
 
-		for (int i = N; i --> 0;) {
+		for (int i = N - 1; i > 0; --i) {
 			if (cache.arr[i] >= other.arr[i])
 				res[i] = cache.arr[i] - other.arr[i];
 			else {
 				for (int j = i - 1; j >= 0; --j) {
 					if (cache.arr[j] != 0) {
 						--cache.arr[j];
+						while (cache.arr[++j] == 0 && j != i)
+							cache.arr[j] = 9;
 						break;
 					}
 				}
@@ -355,56 +357,71 @@ public:
 
 	COMPILE_TIME_WORK
 	BigInt<N> operator/ (const BigInt<N>& other) const {
-		std::string res;
-        BigInt<N> curr;
-        BigInt<N> tmp;
-        BigInt<N> next;
+		// std::string res;
+        // BigInt<N> curr;
+        // BigInt<N> tmp;
+        // BigInt<N> next;
 
-        long long this_start = CT_array<char, N>::__till_num(this->arr.arr);
-        long long this_end;
-        const long long other_start = CT_array<char, N>::__till_num(other.arr.arr);
-        const long long other_end = 0;
-        const long long other_num_size = other.size();
+        // long long this_start = CT_array<char, N>::__till_num(this->arr.arr);
+        // long long this_end;
+        // const long long other_start = CT_array<char, N>::__till_num(other.arr.arr);
+        // const long long other_end = 0;
+        // const long long other_num_size = other.size();
 
-        int count;
+        // int count;
 
-        if (other_num_size == 0)
-            throw std::invalid_argument("Can't divide by zero");
+        // if (other_num_size == 0)
+        //     throw std::invalid_argument("Can't divide by zero");
 
-        while (this_end < N) {
-            count = 0;
-            // std::cout << "tmp.size(): " << tmp.size() << std::endl;
-            this_end = this_start + other_num_size - tmp.size();
-            // std::cout << this_start << ' ' << this_end << std::endl;
-            if (tmp.size() == 0)
-                curr.subnum(*this, this_start, this_end, N - other_num_size);
-            else
-                curr = tmp;
-            // std::cout << "1st curr: ";
-            // curr.print();
-            while (curr < other) {
-                curr = curr * BigInt<N>("10");
-                std::string last_num = std::to_string(arr[this_end]);
-                curr += BigInt<N>(last_num.c_str());
-                ++this_end;
-            }
-            std::cout << "2nd curr: ";
-            curr.print();
-            tmp = curr;
-            std::cout << "other: ";
-            other.print();
-            while (tmp >= other) {
-                std::cout << "tmp: ";
-                tmp.print();
-                tmp -= other;
-                ++count;
-            }
-            std::cout << "count: " << count << std::endl;
-            res += count + '0';
-            this_start = this_end;
-        }
-        // std::cout << res << std::endl;
-		return BigInt<N>(res.c_str());
+        // while (this_end < N) {
+        //     count = 0;
+        //     // std::cout << "tmp.size(): " << tmp.size() << std::endl;
+        //     this_end = this_start + other_num_size - tmp.size();
+		// 	if (this_end >= N)
+		// 		this_end = N;
+        //     if (res.empty()) {
+        //         curr.subnum(*this, this_start, this_end, N - other_num_size);
+		// 		while (curr < other) {
+		// 			curr = curr * BigInt<N>("10");
+		// 			std::string last_num = std::to_string(arr[this_end]);
+		// 			curr += BigInt<N>(last_num.c_str());
+		// 			++this_end;
+		// 		}
+		// 	}
+        //     else {
+        //         curr = tmp;
+		// 		bool once_done = false;
+        //     	std::cout << this_start << ' ' << this_end << std::endl;
+		// 		while (curr < other) {
+		// 			curr = curr * BigInt<N>("10");
+		// 			std::string last_num = std::to_string(arr[this_start]);
+		// 			curr += BigInt<N>(last_num.c_str());
+		// 			std::cout << "1st curr: ";
+		// 			curr.print();
+		// 			if (once_done)
+		// 				res += '0';
+		// 			++this_start;
+		// 			++this_end;
+		// 			once_done = true;
+		// 		}
+		// 	}
+        //     std::cout << "2nd curr: ";
+        //     curr.print();
+        //     tmp = curr;
+        //     std::cout << "other: ";
+        //     other.print();
+        //     while (tmp >= other) {
+        //         tmp -= other;
+        //         std::cout << "tmp: ";
+        //         tmp.print();
+        //         ++count;
+        //     }
+        //     std::cout << "count: " << count << std::endl;
+        //     res += count + '0';
+        //     this_start = this_end;
+        // }
+        // // std::cout << res << std::endl;
+		// return BigInt<N>(res.c_str());
 	}
 
 private:
