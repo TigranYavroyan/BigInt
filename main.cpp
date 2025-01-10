@@ -7,14 +7,14 @@ int main () {
     #else
         const
     #endif
-    size_t size = 50;
+    size_t size = 100;
 	if
 	COMPILE_TIME_WORK
     (size) {
 		std::cout << "Compile time start" << std::endl;
 
         COMPILE_TIME_WORK
-        BigInt<size> num1 = "123";
+        BigInt<size> num1 = "999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999";
 
         COMPILE_TIME_WORK
         BigInt<size> num2 = "12312312312";
