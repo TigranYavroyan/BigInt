@@ -6,7 +6,7 @@
 #include <string.h>
 
 #ifndef TMP
-	#define TMP false
+	#define TMP true
 #endif
 // TMP
 
@@ -33,128 +33,50 @@ public:
     friend class BigInt;
 public:
 	COMPILE_TIME_WORK
-    CT_array (value_type val = 0) {
-		int i = SIZE - 1;
-		for (; i > 0 && val != 0; --i) {
-			arr[i] = val % 10;
-			val /= 10;
-		}
-		while (i >= 0)
-			arr[i--] = 0;
-	}
-
+    CT_array (value_type val = 0);
 
 	COMPILE_TIME_WORK
-    CT_array (const CT_array<value_type, SIZE>& other) {
-		for (int i = SIZE; i --> 0;) {
-			arr[i] = other[i];
-		}
-	}
-
+    CT_array (const CT_array<value_type, SIZE>& other);
 
 	COMPILE_TIME_WORK
-    CT_array (const std::initializer_list<value_type>& il) {
-		int i = SIZE;
-		for (auto it = std::rbegin(il); it != std::rend(il); ++it) {
-			arr[--i] = *it;
-		}
-		if (i < 0)
-			throw std::out_of_range("out of range");
-		while (i > 0)
-			arr[--i] = 0;
-	}
-
+    CT_array (const std::initializer_list<value_type>& il);
 
 	COMPILE_TIME_WORK
-    CT_array (const char* str) {
-		int i = SIZE;
-
-		if (str && !__is_numeric(str))
-			throw std::invalid_argument("String must contain only digits");
-
-		static_assert((std::is_same_v<T, int>) || (std::is_same_v<T, char>));
-
-		for (int j = __strlen(str); i --> 0 && j --> 0;) {
-			arr[i] = str[j] - '0';
-		}
-
-		if (i < 0)
-			throw std::out_of_range("out of range");
-		while (i >= 0) {
-			arr[i--] = 0;
-		}
-	}
-
+    CT_array (const char* str);
 public:
 
 	COMPILE_TIME_WORK
-    size_type capacity () const {
-		return SIZE;
-	}
+    size_type capacity () const;
 
 	COMPILE_TIME_WORK
-    size_type size () const {
-        size_type i = __till_num(arr);
-        return SIZE - i;
-	}
+    size_type size () const;
 
 	COMPILE_TIME_WORK
-    void fill (const value_type& val) {
-        for (size_t i = 0; i < SIZE; ++i) {
-            arr[i] = val;
-        }
-	}
+    void fill (const value_type& val);
 
 	COMPILE_TIME_WORK
-    void print () const {
-		size_t i = __till_num(arr);
-		for (;i < SIZE; ++i) {
-			std::cout << arr[i];
-		}
-		std::cout << std::endl;
-	}
+    void print () const;
 public:
 
 	COMPILE_TIME_WORK
-    const_reference operator[] (size_type i) const {
-		return arr[i];
-	}
-
+    const_reference operator[] (size_type i) const;
 
 	COMPILE_TIME_WORK
-    reference operator[] (size_type i) {
-		return const_cast<reference>(static_cast<const CT_array&>(*this)[i]);
-	}
+    reference operator[] (size_type i);
 private:
 	T arr[SIZE];
 
     template <typename U>
     static
 	COMPILE_TIME_WORK
-	size_type __till_num (U* arr) {
-		size_type i = 0;
-		while (i < SIZE && arr[i] == 0)
-			++i;
-		return i;
-	}
+	size_type __till_num (U* arr);
 
 	static
 	COMPILE_TIME_WORK
-	size_type __strlen (const char* str) {
-		size_type i = 0;
-		while (str[i])
-			++i;
-		return i;
-	}
+	size_type __strlen (const char* str);
 
 	COMPILE_TIME_WORK
-    static bool __is_numeric(const char* str) {
-		for (int i = 0; str[i] != '\0'; ++i) {
-			if (str[i] < '0' || str[i] > '9')
-				return false;
-		}
-		return true;
-	}
+    static bool __is_numeric(const char* str);
 };
 
 template <size_t N>
@@ -171,284 +93,98 @@ public:
     BigInt () = default;
 
 	COMPILE_TIME_WORK
-    BigInt (const char* str) : arr(str) {}
+    BigInt (const char* str);
 
 	COMPILE_TIME_WORK
-    BigInt (int val) : arr(val) {}
+    BigInt (int val);
 
 	COMPILE_TIME_WORK
-    BigInt (const std::initializer_list<value_type>& il) : arr(il) {}
+    BigInt (const std::initializer_list<value_type>& il);
 
 	COMPILE_TIME_WORK
-    BigInt (const BigInt<N>& other) : arr(other.arr) {}
-
-    COMPILE_TIME_WORK
-    BigInt (const BigInt<N>& other, size_type start, size_type end, size_type pos = 0) {
-
-    }
+    BigInt (const BigInt<N>& other);
 public:
 
 	COMPILE_TIME_WORK
-    void print () const {
-		size_type i = CT_array<char, N>::__till_num(arr.arr);
-		for (; i < N; ++i) {
-			std::printf("%d", arr[i]);
-		}
-		std::cout.put('\n');
-	}
+    void print () const;
 
 	COMPILE_TIME_WORK
-    size_type size () const {
-		return arr.size();
-	}
+    size_type size () const;
 
 	COMPILE_TIME_WORK
-    size_type capacity () const {
-		return arr.capacity();
-	}
+    size_type capacity () const;
 
 	COMPILE_TIME_WORK
-    void fill (value_type val) {
-		arr.fill(val);
-	}
+    void fill (value_type val);
 
     COMPILE_TIME_WORK
-    void subnum (const BigInt<N>& other, size_type start, size_type end, size_type pos = 0) {
-        if (pos >= N)
-            throw std::out_of_range("Out of range");
-        if (pos == 0)
-            pos = CT_array<char, N>::__till_num(this->arr.arr);
-        while (start != end && pos < N) {
-            arr[pos] = other.arr[start];
-            ++pos;
-            ++start;
-        }
-	}
+    void subnum (const BigInt<N>& other, size_type start, size_type end, size_type pos = 0);
 public:
 
     COMPILE_TIME_WORK
-    bool operator== (const BigInt<N>& other) const {
-        for (int i = 0; i < N; ++i) {
-            if (arr[i] != other.arr[i])
-                return false;
-        }
-        return true;
-    }
+    bool operator== (const BigInt<N>& other) const;
 
     COMPILE_TIME_WORK
-    bool operator!= (const BigInt<N>& other) const {
-        return !(*this == other);
-    }
+    bool operator!= (const BigInt<N>& other) const;
 
     COMPILE_TIME_WORK
-    bool operator> (const BigInt<N>& other) const {
-        return (__is_bigger(*this, other));
-    }
+    bool operator> (const BigInt<N>& other) const;
 
     COMPILE_TIME_WORK
-    bool operator< (const BigInt<N>& other) const {
-        return !(*this > other || *this == other);
-    }
+    bool operator< (const BigInt<N>& other) const;
 
     COMPILE_TIME_WORK
-    bool operator<= (const BigInt<N>& other) const {
-        return !(*this > other);
-    }
+    bool operator<= (const BigInt<N>& other) const;
 
     COMPILE_TIME_WORK
-    bool operator>= (const BigInt<N>& other) const {
-        return !(*this < other);
-    }
+    bool operator>= (const BigInt<N>& other) const;
 
 	COMPILE_TIME_WORK
-    const value_type operator[] (size_type i) const {
-		return arr[i];
-	}
+    const value_type operator[] (size_type i) const;
 
 	COMPILE_TIME_WORK
-    reference operator[] (size_type i) {
-		return arr[i];
-	}
+    reference operator[] (size_type i);
 
 	COMPILE_TIME_WORK
-    BigInt<N> operator+ (const BigInt<N>& other) const {
-		BigInt<N> res;
-		int mod = 0;
-		int curr = 0;
-		int carry = 0;
-
-		for (int i = N; i --> 0;) {
-			curr = carry + arr[i] + other.arr[i];
-			mod = curr % 10;
-			res.arr[i] = mod;
-			carry = curr / 10;
-		}
-
-		return res;
-	}
+    BigInt<N> operator+ (const BigInt<N>& other) const;
 
 	COMPILE_TIME_WORK
-    BigInt<N> operator- (const BigInt<N>& other) const {
-		if (other > *this)
-			throw std::invalid_argument("Result can't be negative");
-
-		BigInt<N> res;
-		BigInt<N> cache = *this;
-
-		for (int i = N - 1; i > 0; --i) {
-			if (cache.arr[i] >= other.arr[i])
-				res[i] = cache.arr[i] - other.arr[i];
-			else {
-				for (int j = i - 1; j >= 0; --j) {
-					if (cache.arr[j] != 0) {
-						--cache.arr[j];
-						while (cache.arr[++j] == 0 && j != i)
-							cache.arr[j] = 9;
-						break;
-					}
-				}
-				res[i] = (10 + cache.arr[i]) - other.arr[i];
-			}
-		}
-
-		return res;
-	}
+    BigInt<N> operator- (const BigInt<N>& other) const;
 
     COMPILE_TIME_WORK
-    BigInt<N>& operator+= (const BigInt<N>& other) {
-        *this = *this + other;
-        return *this;
-    }
-
-    COMPILE_TIME_WORK
-    BigInt<N>& operator-= (const BigInt<N>& other) {
-        *this = *this - other;
-        return *this;
-    }
-
-    COMPILE_TIME_WORK
-    BigInt<N> operator* (const BigInt<N>& other) const {
-        BigInt<N> res;
-        BigInt<N> row;
-
-        int carry = 0;
-        int mod = 0;
-        int curr = 0;
-        int offset = 0;
-
-        int num1_size = 0;
-        int num2_size = other.size();
-
-        for (int i = other.capacity() - 1; num2_size >= 0; --i, --num2_size) {
-            num1_size = this->size();
-            for (int j = this->capacity() - 1; num1_size >= 0; --j, --num1_size) {
-                curr = other.arr[i] * arr[j] + carry;
-                carry = curr / 10;
-                mod = curr % 10;
-                row[j - offset] = mod;
-            }
-            res += row;
-            row.fill(0);
-            ++offset;
-        }
-
-        return res;
-    }
+    BigInt<N> operator* (const BigInt<N>& other) const;
 
 	COMPILE_TIME_WORK
-	BigInt<N> operator/ (const BigInt<N>& other) const {
-		// std::string res;
-        // BigInt<N> curr;
-        // BigInt<N> tmp;
-        // BigInt<N> next;
+	std::pair<BigInt<N>, BigInt<N>> operator/ (const BigInt<N>& other) const;
 
-        // long long this_start = CT_array<char, N>::__till_num(this->arr.arr);
-        // long long this_end;
-        // const long long other_start = CT_array<char, N>::__till_num(other.arr.arr);
-        // const long long other_end = 0;
-        // const long long other_num_size = other.size();
+    COMPILE_TIME_WORK
+    BigInt<N>& operator+= (const BigInt<N>& other);
 
-        // int count;
+    COMPILE_TIME_WORK
+    BigInt<N>& operator-= (const BigInt<N>& other);
 
-        // if (other_num_size == 0)
-        //     throw std::invalid_argument("Can't divide by zero");
+    COMPILE_TIME_WORK
+    BigInt<N>& operator*= (const BigInt<N>& other);
 
-        // while (this_end < N) {
-        //     count = 0;
-        //     // std::cout << "tmp.size(): " << tmp.size() << std::endl;
-        //     this_end = this_start + other_num_size - tmp.size();
-		// 	if (this_end >= N)
-		// 		this_end = N;
-        //     if (res.empty()) {
-        //         curr.subnum(*this, this_start, this_end, N - other_num_size);
-		// 		while (curr < other) {
-		// 			curr = curr * BigInt<N>("10");
-		// 			std::string last_num = std::to_string(arr[this_end]);
-		// 			curr += BigInt<N>(last_num.c_str());
-		// 			++this_end;
-		// 		}
-		// 	}
-        //     else {
-        //         curr = tmp;
-		// 		bool once_done = false;
-        //     	std::cout << this_start << ' ' << this_end << std::endl;
-		// 		while (curr < other) {
-		// 			curr = curr * BigInt<N>("10");
-		// 			std::string last_num = std::to_string(arr[this_start]);
-		// 			curr += BigInt<N>(last_num.c_str());
-		// 			std::cout << "1st curr: ";
-		// 			curr.print();
-		// 			if (once_done)
-		// 				res += '0';
-		// 			++this_start;
-		// 			++this_end;
-		// 			once_done = true;
-		// 		}
-		// 	}
-        //     std::cout << "2nd curr: ";
-        //     curr.print();
-        //     tmp = curr;
-        //     std::cout << "other: ";
-        //     other.print();
-        //     while (tmp >= other) {
-        //         tmp -= other;
-        //         std::cout << "tmp: ";
-        //         tmp.print();
-        //         ++count;
-        //     }
-        //     std::cout << "count: " << count << std::endl;
-        //     res += count + '0';
-        //     this_start = this_end;
-        // }
-        // // std::cout << res << std::endl;
-		// return BigInt<N>(res.c_str());
-	}
+	COMPILE_TIME_WORK
+    BigInt<N>& operator/= (const BigInt<N>& other);
 
 private:
 	CT_array<char, N> arr;
 
 	static
 	COMPILE_TIME_WORK
-    bool __is_bigger(const BigInt<N>& op1, const BigInt<N>& op2) {
-		for (int i = 0; i < N; ++i) {
-			if (op1[i] < op2[i])
-				return false;
-			else if (op1[i] > op2[i])
-				return true;
-		}
-		return false;
-	}
+    bool __is_bigger(const BigInt<N>& op1, const BigInt<N>& op2);
 
     static
 	COMPILE_TIME_WORK
-    bool __is_bigger_equal_ranges(const CT_array<char, N>& op1, const CT_array<char, N>& op2, long long f_start, long long f_end, long long s_start, long long s_end) {
-		while (f_start >= f_end && s_start >= s_end) {
-            if (op1[f_start] < op2[s_start])
-                return false;
-            --f_start;
-            --s_start;
-        }
-        return true;
-	}
+    bool __is_bigger_equal_ranges(const CT_array<char, N>& op1, const CT_array<char, N>& op2, long long f_start, long long f_end, long long s_start, long long s_end);
+
+	static
+	COMPILE_TIME_WORK
+	int __calculate_count (BigInt<N>& dividend, const BigInt<N>& divisor);
 };
+
+#include "BigInt.cpp"
+
 #endif // BIGINT_HPP
