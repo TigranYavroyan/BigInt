@@ -94,9 +94,3 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 Special thanks to the C++ community for inspiring modern template-based programming.
 
 ---
-
-### 🖼️ Featured Display
-
-If you'd like, I can directly write this to a `README.md` file for you. Let me know! Alternatively, you can create a new file named `README.md` in the root of your repository, copy the above content, and commit it to GitHub.
-
-Would you like me to create a `.md` file for this?
