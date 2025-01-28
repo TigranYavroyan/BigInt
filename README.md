@@ -8,7 +8,7 @@ To create a featured version of your GitHub README file, you can make use of **M
 
 ![Stars](https://img.shields.io/github/stars/TigranYavroyan/BigInt?style=social)  
 ![Last Commit](https://img.shields.io/github/last-commit/TigranYavroyan/BigInt?color=green)  
-![License](https://img.shields.io/github/license/TigranYavroyan/BigInt)  
+![License](https://img.shields.io/github/license/TigranYavroyan/BigInt)
 
 ---
 
