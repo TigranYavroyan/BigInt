@@ -1,7 +1,3 @@
-To create a featured version of your GitHub README file, you can make use of **Markdown styling** with sections, images, and badges to make it visually appealing and professional. Here's an example of how you can structure your README file with an enhanced design:
-
----
-
 # 🌟 BigInt Library
 
 🚀 **A fast and powerful compile-time arbitrary-precision integer library for C++.**
