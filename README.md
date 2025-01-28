@@ -19,8 +19,7 @@
 ## 📚 Getting Started
 
 ### Prerequisites
-- A **C++17 or later** compatible compiler. If you want to fully use the metaprogramming
-- power , use C++20 for compile time string literals.
+- A **C++17 or later** compatible compiler. If you want to fully use the metaprogramming power , use C++20 for compile time string literals.
 
 ### Installation
 1. Clone the repository:
