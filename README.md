@@ -7,8 +7,7 @@ To create a featured version of your GitHub README file, you can make use of **M
 🚀 **A fast and powerful compile-time arbitrary-precision integer library for C++.**
 
 ![Stars](https://img.shields.io/github/stars/TigranYavroyan/BigInt?style=social)  
-![Last Commit](https://img.shields.io/github/last-commit/TigranYavroyan/BigInt?color=green)  
-![License](https://img.shields.io/github/license/TigranYavroyan/BigInt)
+![Last Commit](https://img.shields.io/github/last-commit/TigranYavroyan/BigInt?color=green) 
 
 ---
 
