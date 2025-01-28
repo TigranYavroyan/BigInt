@@ -57,7 +57,7 @@ int main() {
 
 ### 🔨 Compile
 ```bash
-g++ -std=c++2a -o bigint_example main.cpp
+g++ -std=c++2a -o bigint_example test.cpp
 ./bigint_example
 ```
 
